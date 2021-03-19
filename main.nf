@@ -3753,7 +3753,8 @@ process VEP {
         --per_gene \
         --stats_file ${reducedVCF}_VEP.summary.html \
         --total_length \
-        --vcf
+        --vcf \
+	--most_severe
 
     rm -rf ${reducedVCF}
     """
