@@ -4,21 +4,17 @@ println "Yabili_Onco_Anno_Pipe"
 
 //PARTE_1
 //params.output_maf='/hpcshare/genomics/yabili_pipeline_vda/sarek_analyses/results/Annotation/10643_vs_2682/VEP/out_filtered_SOMATIC.maf'
-
-
 //aggiungere un if per Strelka vs Mutect
 //params.input_vcf='./results/VariantCalling/Mutect2/filt_vcf/*
-
 //params.input_vcf="$PWD/results/VariantCalling/*_vs_*/Strelka/{StrelkaBP_*_vs_*_somatic_indels.vcf,StrelkaBP_*_vs_*_somatic_snvs.vcf}"
-
-params.input_vcf=""
-
 //StrelkaBP_*_vs_*_somatic_indels.vcf.gz
 //StrelkaBP_*_vs_*_somatic_snvs.vcf.gz
 
 
+params.input_vcf=""
 params.tumor_id=''
 params.normal_id=''
+params.param=''
 
 //fixed data
 params.ref_fasta='/hpcshare/genomics/references/gatk_bundle/reference/resources_broad_hg38_v0_Homo_sapiens_assembly38.fasta'
@@ -41,9 +37,9 @@ TOKEN="d8bc17e4-4d95-4104-b5ee-1a2c8a94b7aa"
 params.outdir="results/Annotation/OncoKB"
 
 //Print some stuff here
-println "reads: $params.input_vcf"
-println "reads: $params.tumor_id"
-println "reference: $params.normal_id"
+println "input: $params.input_vcf"
+println "tumor_id: $params.tumor_id"
+println "normal_id: $params.normal_id"
 
 
 Channel.fromPath( params.input_vcf, checkIfExists:true )        
@@ -58,7 +54,7 @@ process vcf2maf {
 
   	output:
   	//set file("*.vep.vcf"), file("out_filtered_SOMATIC.maf")  into maf_ch
-  	 file("out_filtered_SOMATIC.maf")  into maf_ch
+  	 file("${params.param}_SOMATIC.maf")  into maf_ch
 
 
   	script:
@@ -71,7 +67,7 @@ process vcf2maf {
    
    	perl /hpcshare/genomics/yabili_pipeline_vda/yabili_annotation_vda/vcf2maf.pl \
       	--input-vcf ${params.input_vcf} \
-      	--output-maf out_filtered_SOMATIC.maf \
+      	--output-maf ${params.param}_SOMATIC.maf \
       	--tumor-id ${params.tumor_id} \
       	--normal-id ${params.normal_id} \
       	--ref-fasta ${params.ref_fasta} \
@@ -91,13 +87,13 @@ process oncokb_mafannotator {
   	file(maf)  from maf_ch
    
   	output:
-  	file("maf.oncokb") into oncokb_mafannotator_ch
+  	file("${params.param}.maf.oncokb") into oncokb_mafannotator_ch
 
   	script:
   	"""
   	python3 /hpcshare/genomics/yabili_pipeline_vda/yabili_annotation_vda/MafAnnotator.py \
     -i ${maf} \
-    -o maf.oncokb \
+    -o ${params.param}.maf.oncokb \
     -b ${TOKEN} \
     -t BRCA #in questo modo si bypassa la clinical_data
  	  """
