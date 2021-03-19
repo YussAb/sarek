@@ -10,7 +10,7 @@ println "reference: $params.ref"
 
 
 //
-params.tsv = "/hpcshare/genomics/yabili_pipeline_vda/yabili_germline_vda/HG002_SINGLE_GATK/results/Preprocessing/TSV/recalibrated.tsv"
+params.tsv = "./results/Preprocessing/TSV/somatic_mutect2.tsv"
 
 Channel.fromPath( params.tsv , checkIfExists:true)
        .splitCsv(sep:'\t')
