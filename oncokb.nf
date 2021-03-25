@@ -15,6 +15,8 @@ params.input_vcf=""
 params.tumor_id=''
 params.normal_id=''
 params.param=''
+params.oncocode=''
+
 
 //fixed data
 params.ref_fasta='/hpcshare/genomics/references/gatk_bundle/reference/resources_broad_hg38_v0_Homo_sapiens_assembly38.fasta'
@@ -74,10 +76,11 @@ process vcf2maf {
       	--vep-path ${params.vep_path} \
       	--vep-data ${params.vep_data} \
       	--ncbi-build GRCh38
-
  	"""
   
 }
+
+//--custom-enst  allCuratedGenes_oncokb
 
 process oncokb_mafannotator {
 
@@ -95,11 +98,11 @@ process oncokb_mafannotator {
     -i ${maf} \
     -o ${params.param}.maf.oncokb \
     -b ${TOKEN} \
-    -t BRCA #in questo modo si bypassa la clinical_data
+    -t ${params.oncocode}
  	  """
 }
 
-
+#in questo modo si bypassa la clinical_data
 
 
 
